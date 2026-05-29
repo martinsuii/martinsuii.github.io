@@ -12,6 +12,8 @@
             --card-bg: #161b22;
             --border-color: #30363d;
             --tag-bg: #21262d;
+            --play-btn-bg: #238636;
+            --play-btn-hover: #2ea043;
         }
 
         body {
@@ -72,6 +74,7 @@
         }
 
         .project-card {
+            position: relative;
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -87,11 +90,38 @@
             border-color: var(--accent-color);
         }
 
+        .project-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            padding-right: 70px; /* Leave space so title text doesn't overlap button */
+        }
+
         .project-title {
             color: var(--accent-color);
             font-size: 1.2rem;
             font-weight: 600;
-            margin: 0 0 0.5rem 0;
+            margin: 0;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background-color: var(--play-btn-bg);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            transition: background-color 0.1s ease;
+            z-index: 2; /* Ensures click registers on the button, not the card link */
+        }
+
+        .play-btn:hover {
+            background-color: var(--play-btn-hover);
         }
 
         .project-desc {
@@ -138,7 +168,12 @@
             
             <div class="projects-grid">
                 <a href="https://github.com/martinsuii/another-dungeon-game" target="_blank" class="project-card">
-                    <div class="project-title">Another dungeon game</div>
+                    <div class="project-title-container">
+                        <div class="project-title">Another dungeon game</div>
+                    </div>
+                    <object>
+                        <a href="https://martinsuii.github.io/another-dungeon-game?easter=egg" target="_blank" class="play-btn" onclick="event.stopPropagation();">Play</a>
+                    </object>
                     <div class="project-desc">Just another dungeon game</div>
                     <div class="tags">
                         <span class="tag">HTML</span>
@@ -148,8 +183,10 @@
                 </a>
 
                 <a href="https://github.com/martinsuii/qr-auth" target="_blank" class="project-card">
-                    <div class="project-title">QR authenticator</div>
-                    <div class="project-desc">100% air-gapped P2P QR authenticator using Ed25519 challenge-response. Phone signs via QR code, laptop webcam verifies. No network, no Bluetooth </div>
+                    <div class="project-title-container">
+                        <div class="project-title">QR authenticator</div>
+                    </div>
+                    <div class="project-desc">100% air-gapped P2P QR authenticator using Ed25519 challenge-response. Phone signs via QR code, laptop webcam verifies. No network, no Bluetooth</div>
                     <div class="tags">
                         <span class="tag">Kotlin</span>
                         <span class="tag">Go</span>
