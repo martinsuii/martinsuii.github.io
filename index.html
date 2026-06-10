@@ -172,7 +172,7 @@
                         <div class="project-title">Another dungeon game</div>
                     </div>
                     <object>
-                        <a href="https://martinsuii.github.io/another-dungeon-game?easter=egg" target="_blank" class="play-btn" onclick="event.stopPropagation();">Play</a>
+                        <a href="https://martinsuii.github.io/another-dungeon-game" target="_blank" class="play-btn" id="play-btn" onclick="event.stopPropagation();">Play</a>
                     </object>
                     <div class="project-desc">Just another dungeon game</div>
                     <div class="tags">
@@ -196,9 +196,14 @@
         </section>
 
         <footer>
-             I like bread
+             <span id="bread-text" style="cursor:pointer;">I like bread</span>
         </footer>
     </div>
 
+<script>
+    document.getElementById('bread-text').addEventListener('click', function() {
+        document.getElementById('play-btn').href = 'https://martinsuii.github.io/another-dungeon-game?easter=egg';
+    });
+</script>
 </body>
 </html>
