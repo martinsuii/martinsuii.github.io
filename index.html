@@ -99,6 +99,12 @@
             border-color: var(--accent-color);
         }
 
+        .project-card-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
         .project-title-container {
             display: flex;
             justify-content: space-between;
@@ -131,6 +137,16 @@
 
         .play-btn:hover {
             background-color: var(--play-btn-hover);
+        }
+
+        .coming-soon {
+            opacity: 0.7;
+            cursor: pointer;
+        }
+
+        .coming-soon-btn,
+        .coming-soon-btn:hover {
+            background-color: #555555;
         }
 
         .project-desc {
@@ -177,26 +193,26 @@
             
             <div class="projects-grid">
                 <div class="category-label">Games</div>
-                <a href="https://github.com/martinsuii/another-dungeon-game" target="_blank" class="project-card">
-                    <div class="project-title-container">
-                        <div class="project-title">Another dungeon game</div>
-                    </div>
-                    <object>
-                        <a href="https://martinsuii.github.io/another-dungeon-game" target="_blank" class="play-btn" id="play-btn" onclick="event.stopPropagation();">Play</a>
-                    </object>
-                    <div class="project-desc">Just another dungeon game</div>
-                    <div class="tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">CSS</span>
-                        <span class="tag">JavaScript</span>
-                    </div>
-                </a>
+                <div class="project-card">
+                    <a href="https://github.com/martinsuii/another-dungeon-game" target="_blank" class="project-card-link">
+                        <div class="project-title-container">
+                            <div class="project-title">Another dungeon game</div>
+                        </div>
+                        <div class="project-desc">Just another dungeon game</div>
+                        <div class="tags">
+                            <span class="tag">HTML</span>
+                            <span class="tag">CSS</span>
+                            <span class="tag">JavaScript</span>
+                        </div>
+                    </a>
+                    <a href="https://martinsuii.github.io/another-dungeon-game" target="_blank" class="play-btn" id="play-btn">Play</a>
+                </div>
 
-                <div class="project-card" style="opacity:0.7;cursor:pointer;" onclick="alert('Coming out soon...')">
+                <div class="project-card coming-soon" id="coming-soon-card">
                     <div class="project-title-container">
                         <div class="project-title">Yet another factory</div>
                     </div>
-                    <span class="play-btn" style="background-color:#555;">COMING SOON</span>
+                    <span class="play-btn coming-soon-btn">COMING SOON</span>
                     <div class="project-desc">Just a browser factory game</div>
                     <div class="tags">
                         <span class="tag">Coming soon</span>
@@ -236,6 +252,10 @@
 <script>
     document.getElementById('very-important-notice-text').addEventListener('click', function() {
         document.getElementById('play-btn').href = 'https://martinsuii.github.io/another-dungeon-game?easter=egg';
+    });
+
+    document.getElementById('coming-soon-card').addEventListener('click', function() {
+        alert('Coming out soon...');
     });
 </script>
 </body>
