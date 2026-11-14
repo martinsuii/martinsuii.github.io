@@ -529,13 +529,12 @@
         inset: 0;
         z-index: 60;
         padding: clamp(1rem, 4vw, 2.75rem);
-        background: rgba(3, 5, 6, .93);
-        color: #7dffb0;
+        background: #000;
+        color: #ededed;
         font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
         font-size: clamp(.72rem, 1.7vw, .95rem);
         line-height: 1.55;
         overflow: hidden;
-        backdrop-filter: blur(2px) contrast(1.15);
         animation: crash-in .16s steps(3) both;
     }
 
@@ -552,18 +551,12 @@
         animation: crash-flicker .1s steps(2) infinite;
     }
 
-    .crash.out {
-        animation: none;
-        opacity: 0;
-        transition: opacity .4s ease;
-    }
-
     .crash.burst { animation: crash-burst .16s steps(2) 3; }
 
     .crash__log {
         margin: 0;
         white-space: pre-wrap;
-        text-shadow: 0 0 7px rgba(125, 255, 176, .45);
+        text-shadow: 0 0 6px rgba(255, 255, 255, .22);
         max-height: 100%;
         overflow: hidden;
     }
@@ -572,57 +565,104 @@
         animation: line-in .13s steps(2) both;
     }
 
-    .crash__log .dim { color: #2f6b48; text-shadow: none; }
-    .crash__log .hot { color: #ff4d6d; text-shadow: 0 0 9px rgba(255, 77, 109, .6); }
+    .crash__log .dim { color: #565656; text-shadow: none; }
+    .crash__log .hot { color: #fff; font-weight: 700; }
     .crash__log .blank { height: .7em; }
+    .crash__log .blink { animation: line-in .13s steps(2) both, hard-blink .42s steps(2) infinite; }
 
     @keyframes line-in {
         from { opacity: .15; transform: translateX(-3px); }
         to { opacity: 1; transform: none; }
     }
 
-    .crash__cursor {
-        display: inline-block;
-        margin-left: .15em;
-        animation: blink 1s steps(2) infinite;
-    }
-
     .crash__final {
-        margin-top: 1.2em;
-        font-size: clamp(1.35rem, 6.2vw, 3.1rem);
-        font-weight: 800;
-        line-height: 1.05;
-        letter-spacing: .02em;
-        color: #e8fff2;
-        text-shadow: 0 0 22px rgba(125, 255, 176, .55);
-        animation: crash-final .5s cubic-bezier(.16, .9, .2, 1) both;
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: clamp(1rem, 4vw, 2.75rem);
+        font-size: clamp(1.9rem, 13vw, 7rem);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -.02em;
+        color: #fff;
+        text-align: center;
+        text-shadow: 3px 0 0 #111, -3px 0 0 #3a3a3a;
+        animation: crash-final .4s steps(3) both;
     }
 
-    .crash__final em {
-        display: block;
-        margin-top: .8em;
-        font-style: normal;
-        font-size: .3em;
-        font-weight: 500;
-        letter-spacing: .34em;
+    .crash__final.settled {
+        animation: corrupt-jitter .82s steps(2) infinite;
+    }
+
+    @keyframes corrupt-jitter {
+        0%, 100% { transform: translate(0, 0); opacity: 1; }
+        22% { transform: translate(-3px, 1px) skewX(-.5deg); opacity: .82; }
+        44% { transform: translate(3px, -1px); opacity: 1; }
+        68% { transform: translate(-1px, -2px) skewX(.5deg); opacity: .9; }
+        86% { transform: translate(2px, 1px); opacity: .7; }
+    }
+
+    /* terminal shell */
+    .term { cursor: default; }
+
+    .term.armed {
+        outline: 2px solid #ededed;
+        outline-offset: -12px;
+    }
+
+    .term__hint {
+        position: absolute;
+        right: clamp(1rem, 4vw, 2.75rem);
+        bottom: clamp(1rem, 4vw, 2.75rem);
+        font-size: .7em;
+        letter-spacing: .22em;
         text-transform: uppercase;
-        color: #7dffb0;
-        opacity: .8;
-        text-shadow: 0 0 12px rgba(125, 255, 176, .5);
+        color: #4a4a4a;
+        pointer-events: none;
+        transition: color .2s steps(2);
     }
 
-    .crash__hint {
-        margin-top: 2.2em;
-        font-size: .72em;
-        letter-spacing: .18em;
-        color: #2f6b48;
-        animation: line-in .4s steps(3) .35s both;
+    .term.armed .term__hint { color: #ededed; }
+
+    .crash__log .caret {
+        display: inline-block;
+        width: .55em;
+        height: 1em;
+        margin-left: .2em;
+        vertical-align: -.16em;
+        background: #ededed;
+        animation: hard-blink 1.05s steps(2) infinite;
     }
 
-    body.crash-mode .wrap,
-    body.crash-mode footer {
-        animation: page-glitch .22s steps(2) infinite;
-        filter: blur(1.4px) saturate(1.4) hue-rotate(-12deg);
+    html.terminal-lock { overflow: hidden; }
+
+    body.glitching .wrap,
+    body.glitching footer {
+        animation: drop-glitch .52s steps(2) both;
+    }
+
+    /* a few pixels die every time you feed it a file */
+    .dead-pixels {
+        position: fixed;
+        inset: 0;
+        z-index: 70;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .dead-pixels i {
+        position: absolute;
+        display: block;
+        background: #fff;
+        mix-blend-mode: difference;
+        opacity: var(--o, .8);
+        animation: px-flicker var(--t, 2s) steps(2) infinite var(--delay, 0s);
+    }
+
+    @keyframes px-flicker {
+        0%, 100% { opacity: var(--o, .8); transform: scale(1); }
+        50% { opacity: .1; transform: scale(1.9); }
     }
 
     @keyframes crash-in {
@@ -637,24 +677,27 @@
 
     @keyframes crash-burst {
         0% { transform: translate(0, 0); filter: none; }
-        50% { transform: translate(-6px, 3px); filter: invert(1) hue-rotate(90deg); }
+        50% { transform: translate(-6px, 3px); filter: contrast(1.7) brightness(1.1); }
         100% { transform: translate(5px, -3px); filter: none; }
+    }
+
+    @keyframes hard-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .25; }
+    }
+
+    @keyframes drop-glitch {
+        0% { transform: none; clip-path: none; }
+        12% { transform: translate(-5px, 2px) skewX(-.6deg); clip-path: inset(6% 0 68% 0); }
+        22% { transform: translate(4px, -2px); clip-path: inset(72% 0 4% 0); }
+        34% { transform: translate(-3px, 1px) skewX(.4deg); clip-path: inset(22% 0 44% 0); }
+        46% { transform: translate(3px, -1px); clip-path: none; }
+        60%, 100% { transform: none; clip-path: none; }
     }
 
     @keyframes crash-final {
         from { opacity: 0; transform: scale(.94); letter-spacing: .18em; }
         to { opacity: 1; transform: scale(1); letter-spacing: .02em; }
-    }
-
-    @keyframes page-glitch {
-        0% { transform: translate(0, 0); clip-path: none; }
-        50% { transform: translate(-1px, 1px) skewX(.3deg); clip-path: inset(2% 0 1% 0); }
-        100% { transform: translate(1px, -1px); clip-path: none; }
-    }
-
-    @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0; }
     }
 
     .toast {
@@ -707,6 +750,7 @@
 <body>
 
 <div class="aurora" aria-hidden="true"></div>
+<div class="dead-pixels" id="dead-pixels" aria-hidden="true"></div>
 
 <div class="wrap">
 
@@ -734,7 +778,7 @@
                 <a class="play" href="https://martinsuii.github.io/another-dungeon-game" target="_blank" rel="noopener">Play ↗</a>
                 <a class="card__stretch" href="https://github.com/martinsuii/another-dungeon-game" target="_blank" rel="noopener" aria-label="Another dungeon game repository"></a>
             </div>
-            <a class="card" href="https://github.com/martinsuii/qr-auth" target="_blank" rel="noopener">
+            <a class="card" id="qr-card" href="https://github.com/martinsuii/qr-auth" target="_blank" rel="noopener" draggable="true" data-egg="terminal">
                 <div class="card__title">QR authenticator <span>↗</span></div>
                 <p class="card__desc">Air-gapped P2P QR authenticator using Ed25519 challenge-response. No network, no Bluetooth.</p>
                 <div class="tags">
@@ -898,7 +942,8 @@
     const sources = [
         document.getElementById('dungeon-card'),
         document.getElementById('avatar'),
-        document.getElementById('gh')
+        document.getElementById('gh'),
+        document.getElementById('qr-card')
     ];
 
     let eggStep = 0;
@@ -923,11 +968,17 @@
         duck.classList.remove('is-target');
 
         if (e.dataTransfer.files && e.dataTransfer.files.length) {
-            takeArtifact(e.dataTransfer.files[0]);
             return;
         }
 
         const token = e.dataTransfer.getData('text/plain');
+
+        if (token === 'terminal') {
+            eggStep = 0;
+            duck.classList.remove('is-armed');
+            openTerminal();
+            return;
+        }
 
         if (eggStep === 0 && token === 'repo') {
             eggStep = 1;
@@ -954,7 +1005,30 @@
         worm: '60eb7f3a33f290dc',
         end: '015259d32e7a972f'
     };
-    const carried = new Map();
+    const GLYPHS = '0123456789abcdef#@%&$<>[]{}/*\\|~^`';
+    const attached = new Set();
+    const deadLayer = document.getElementById('dead-pixels');
+    let term = null;
+
+    const noise = (len) => {
+        let out = '';
+        for (let i = 0; i < len; i++) out += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+        return out;
+    };
+
+    function corruptPixels(count) {
+        for (let i = 0; i < count; i++) {
+            const px = document.createElement('i');
+            px.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+            px.style.top = (Math.random() * 100).toFixed(2) + 'vh';
+            px.style.width = (1 + Math.floor(Math.random() * 4)) + 'px';
+            px.style.height = (1 + Math.floor(Math.random() * 2)) + 'px';
+            px.style.setProperty('--o', (0.35 + Math.random() * 0.65).toFixed(2));
+            px.style.setProperty('--t', (1.1 + Math.random() * 3.4).toFixed(2) + 's');
+            px.style.setProperty('--delay', (-Math.random() * 3).toFixed(2) + 's');
+            deadLayer.appendChild(px);
+        }
+    }
 
     function fileText(file) {
         if (typeof file.text === 'function') return file.text();
@@ -966,7 +1040,71 @@
         });
     }
 
-    async function takeArtifact(file) {
+    function termLine(text, cls) {
+        const el = document.createElement('div');
+        if (cls) el.className = cls;
+        el.textContent = text || '\u00a0';
+        term.log.appendChild(el);
+        while (term.log.children.length > 16) term.log.firstElementChild.remove();
+        return el;
+    }
+
+    function showPrompt() {
+        const el = termLine('$ ', 'prompt');
+        const caret = document.createElement('span');
+        caret.className = 'caret';
+        el.appendChild(caret);
+        term.prompt = el;
+    }
+
+    function openTerminal() {
+        if (term) return;
+
+        const stage = document.createElement('div');
+        stage.className = 'crash term';
+        stage.setAttribute('aria-hidden', 'true');
+
+        const log = document.createElement('div');
+        log.className = 'crash__log';
+        stage.appendChild(log);
+
+        const hint = document.createElement('div');
+        hint.className = 'term__hint';
+        hint.textContent = 'drop a file';
+        stage.appendChild(hint);
+
+        document.body.appendChild(stage);
+        document.documentElement.classList.add('terminal-lock');
+
+        term = { stage, log, hint, busy: false, prompt: null };
+        showPrompt();
+    }
+
+    function typeCommand(text, done) {
+        const el = termLine('');
+        let i = 0;
+        const tick = setInterval(() => {
+            i++;
+            el.textContent = text.slice(0, i);
+            if (i >= text.length) {
+                clearInterval(tick);
+                setTimeout(done, 140);
+            }
+        }, 30);
+    }
+
+    async function uploadFile(file) {
+        if (!term || term.busy || !file) return;
+
+        term.busy = true;
+        term.hint.textContent = 'reading';
+        term.stage.classList.remove('armed');
+
+        if (term.prompt) {
+            term.prompt.remove();
+            term.prompt = null;
+        }
+
         let raw = '';
         try {
             raw = await fileText(file);
@@ -977,136 +1115,119 @@
         const token = raw.toLowerCase().replace(/[^0-9a-f]/g, '');
         const name = Object.keys(ARTIFACTS).find((key) => ARTIFACTS[key] === token);
 
-        if (!name) {
-            say('not one of them');
-            return;
-        }
+        typeCommand('$ upload ' + file.name, () => {
+            if (!name) {
+                termLine('unknown object', 'hot');
+                corruptPixels(3);
+            } else if (attached.has(name)) {
+                termLine(name + ' already attached', 'dim');
+            } else {
+                attached.add(name);
+                termLine(file.name + ' :: ' + token, 'dim');
+                termLine('attached ' + attached.size + '/3');
+                corruptPixels(attached.size === 1 ? 9 : 18);
+            }
 
-        if (carried.has(name)) {
-            say(name + ' is already here');
-            return;
-        }
+            if (attached.size === 3) {
+                term.hint.remove();
+                runCrash();
+                return;
+            }
 
-        carried.set(name, file.name);
-        duck.classList.add('is-armed');
-
-        if (carried.size < 3) {
-            say(name + ' · ' + carried.size + '/3');
-            return;
-        }
-
-        const order = [...carried.keys()];
-        carried.clear();
-        duck.classList.remove('is-armed');
-        runCrash(order);
+            term.hint.textContent = name ? 'drop a file' : 'try again';
+            term.busy = false;
+            showPrompt();
+        });
     }
 
-    function runCrash(order) {
+    function runCrash() {
+        const stage = term.stage;
+        const log = term.log;
+
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            say('the universe is whole');
+            termLine('');
+            termLine('the universe is whole');
             return;
         }
-
-        const stage = document.createElement('div');
-        stage.className = 'crash';
-        stage.setAttribute('aria-hidden', 'true');
-
-        const log = document.createElement('div');
-        log.className = 'crash__log';
-        stage.appendChild(log);
-        document.body.appendChild(stage);
-        document.body.classList.add('crash-mode');
 
         duck.classList.remove('spin');
         void duck.offsetWidth;
         duck.classList.add('spin');
 
-        const timers = [];
-        let burstId = 0;
-        let closed = false;
+        termLine('');
+        termLine('reconstructing tree ...', 'dim');
 
-        const later = (fn, ms) => timers.push(setTimeout(fn, ms));
-        const line = (text, cls) => {
-            const el = document.createElement('div');
-            if (cls) el.className = cls;
-            el.textContent = text || '\u00a0';
-            log.appendChild(el);
-            while (log.children.length > 18) log.firstElementChild.remove();
-        };
-
-        function close() {
-            if (closed) return;
-            closed = true;
-            timers.forEach((id) => {
-                clearTimeout(id);
-                clearInterval(id);
-            });
-            clearInterval(burstId);
-            stage.classList.add('out');
-            document.body.classList.remove('crash-mode');
-            document.removeEventListener('keydown', onKey);
-            setTimeout(() => stage.remove(), 420);
-        }
-
-        const onKey = (e) => {
-            if (e.key === 'Escape') close();
-        };
-        document.addEventListener('keydown', onKey);
-        stage.addEventListener('click', close);
-
-        line('$ git fsck --lost-found', 'dim');
-
-        order.forEach((name, i) => {
-            later(() => line('attaching ' + name + '.dat', 'dim'), 170 + i * 300);
-            later(() => line('           ' + ARTIFACTS[name] + '  ok'), 320 + i * 300);
-        });
-
-        later(() => line(''), 1150);
-        later(() => line('3 objects, 0 dangling'), 1200);
-        later(() => line('walking the tree ...'), 1420);
-
-        const glyphs = '0123456789abcdef#@%&$<>[]{}/*\\|~^`';
-        const noise = (len) => {
-            let out = '';
-            for (let i = 0; i < len; i++) out += glyphs[Math.floor(Math.random() * glyphs.length)];
-            return out;
-        };
-
-        later(() => {
+        setTimeout(() => {
             stage.classList.add('burst');
+
             let n = 0;
-            burstId = setInterval(() => {
+            const burstId = setInterval(() => {
                 n++;
                 if (n % 4 === 0) {
-                    line('!! read error at 0x' + noise(8) + '  retrying', 'hot');
+                    termLine('!! read error at 0x' + noise(8) + '  retrying', 'hot');
                 } else if (n % 7 === 0) {
-                    line('   ' + noise(52), 'dim');
+                    termLine(noise(52), 'dim');
                 } else {
-                    line('   ' + noise(20 + Math.floor(Math.random() * 32)));
+                    termLine(noise(20 + Math.floor(Math.random() * 32)), Math.random() < .2 ? 'blink' : '');
                 }
             }, 55);
-        }, 1720);
 
-        later(() => {
-            stage.classList.remove('burst');
-            stage.style.animation = 'none';
-            clearInterval(burstId);
-            document.body.classList.remove('crash-mode');
+            setTimeout(() => {
+                stage.classList.remove('burst');
+                stage.style.animation = 'none';
+                clearInterval(burstId);
 
-            log.innerHTML = '';
-            const final = document.createElement('div');
-            final.className = 'crash__final';
-            final.innerHTML = 'THE UNIVERSE IS A REPO<em>genesis · worm · end</em>';
-            log.appendChild(final);
+                log.innerHTML = '';
 
-            const hint = document.createElement('div');
-            hint.className = 'crash__hint';
-            hint.textContent = '3 objects · 1 history · no backup';
-            log.appendChild(hint);
-        }, 2880);
+                const final = document.createElement('div');
+                final.className = 'crash__final';
+                stage.appendChild(final);
 
-        later(close, 6800);
+                const word = 'CORRUPTED';
+                let frame = 0;
+                const scramble = setInterval(() => {
+                    let out = '';
+                    let done = 0;
+                    for (let i = 0; i < word.length; i++) {
+                        if (frame > i * 2 + 4) {
+                            out += word[i];
+                            done++;
+                        } else {
+                            out += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+                        }
+                    }
+                    final.textContent = out;
+                    frame++;
+                    if (done === word.length) {
+                        clearInterval(scramble);
+                        final.textContent = word;
+                        final.classList.add('settled');
+                    }
+                }, 55);
+            }, 1160);
+        }, 620);
     }
+
+    // while the shell is open, files can be dropped anywhere
+    document.addEventListener('dragover', (e) => {
+        if (!term) return;
+        e.preventDefault();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+        term.stage.classList.add('armed');
+    });
+
+    document.addEventListener('dragleave', (e) => {
+        if (!term || e.relatedTarget !== null) return;
+        term.stage.classList.remove('armed');
+    });
+
+    document.addEventListener('drop', (e) => {
+        if (!term) return;
+        e.preventDefault();
+        term.stage.classList.remove('armed');
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length) uploadFile(files[0]);
+    });
 
 </script>
 </body>
