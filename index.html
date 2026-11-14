@@ -553,6 +553,16 @@
 
     .crash.burst { animation: crash-burst .16s steps(2) 3; }
 
+    .crash.out {
+        animation: shell-out .38s steps(4) both;
+        pointer-events: none;
+    }
+
+    @keyframes shell-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
     .crash__log {
         margin: 0;
         white-space: pre-wrap;
@@ -1000,15 +1010,69 @@
     });
 
     // ---- the git universe ----
+    // only checksums live here, never the objects themselves
     const ARTIFACTS = {
-        genesis: '9cb04d72343094d1',
-        worm: '60eb7f3a33f290dc',
-        end: '015259d32e7a972f'
+        genesis: '20bbde8094d0be17a0b1c811a8d463e31542f3aeba005205d086f757fa1e57e2',
+        worm: 'a0e079230887572b4274059bba1452858852f27b13d87177f25e919061d52b5b',
+        end: '782dbe55085e39b55a7bf059d4ff7f45362a2531776dcabd014bf935286561ca'
     };
     const GLYPHS = '0123456789abcdef#@%&$<>[]{}/*\\|~^`';
     const attached = new Set();
+    const materials = new Map();
     const deadLayer = document.getElementById('dead-pixels');
     let term = null;
+
+    // the reward is sealed with the three objects; the page only holds the cipher
+    const KEYFILE = {
+        iv: 'Jv+2aHOAi+jWKeTI',
+        data: 'oywF1iv2uSMidiM+BiKBIiXoGG+9gekpRyL8r/JoHl+iUiHC8njvIPoEWI1+qcGRwk6wRLghd7tuQi3HoslTzy37ilonX7osVj0UUA=='
+    };
+    let keyDelivered = false;
+
+    const b64bytes = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+
+    async function openKeyfile() {
+        if (!window.crypto || !window.crypto.subtle) return null;
+
+        const order = ['genesis', 'worm', 'end'];
+        if (!order.every((name) => materials.has(name))) return null;
+
+        const enc = new TextEncoder();
+        const seed = await window.crypto.subtle.digest(
+            'SHA-256',
+            enc.encode(order.map((name) => materials.get(name)).join(''))
+        );
+        const key = await window.crypto.subtle.importKey('raw', seed, { name: 'AES-GCM' }, false, ['decrypt']);
+        const plain = await window.crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv: b64bytes(KEYFILE.iv) },
+            key,
+            b64bytes(KEYFILE.data)
+        );
+        return new TextDecoder().decode(plain);
+    }
+
+    async function deliverKeyfile() {
+        if (keyDelivered) return;
+        keyDelivered = true;
+
+        let text = null;
+        try {
+            text = await openKeyfile();
+        } catch (err) {
+            text = null;
+        }
+        if (!text) return;
+
+        const blob = new Blob([text], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'keyfile.dat';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
 
     const noise = (len) => {
         let out = '';
@@ -1040,6 +1104,13 @@
         });
     }
 
+    async function checksum(text) {
+        if (!window.crypto || !window.crypto.subtle) return null;
+        const bytes = new TextEncoder().encode(text);
+        const digest = await window.crypto.subtle.digest('SHA-256', bytes);
+        return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
     function termLine(text, cls) {
         const el = document.createElement('div');
         if (cls) el.className = cls;
@@ -1049,12 +1120,24 @@
         return el;
     }
 
+    function drawInput() {
+        if (term && term.promptText) term.promptText.textContent = term.input;
+    }
+
     function showPrompt() {
+        if (!term) return;
+        if (term.prompt) term.prompt.remove();
+
         const el = termLine('$ ', 'prompt');
+        const text = document.createElement('span');
         const caret = document.createElement('span');
         caret.className = 'caret';
+        el.appendChild(text);
         el.appendChild(caret);
+
         term.prompt = el;
+        term.promptText = text;
+        term.input = '';
     }
 
     function openTerminal() {
@@ -1076,8 +1159,20 @@
         document.body.appendChild(stage);
         document.documentElement.classList.add('terminal-lock');
 
-        term = { stage, log, hint, busy: false, prompt: null };
+        term = { stage, log, hint, busy: false, prompt: null, promptText: null, input: '' };
         showPrompt();
+    }
+
+    function exitEgg() {
+        if (!term) return;
+        const stage = term.stage;
+        term = null;
+        attached.clear();
+        materials.clear();
+        deadLayer.innerHTML = '';
+        document.documentElement.classList.remove('terminal-lock');
+        stage.classList.add('out');
+        setTimeout(() => stage.remove(), 420);
     }
 
     function typeCommand(text, done) {
@@ -1103,6 +1198,7 @@
         if (term.prompt) {
             term.prompt.remove();
             term.prompt = null;
+            term.promptText = null;
         }
 
         let raw = '';
@@ -1112,32 +1208,78 @@
             raw = '';
         }
 
-        const token = raw.toLowerCase().replace(/[^0-9a-f]/g, '');
-        const name = Object.keys(ARTIFACTS).find((key) => ARTIFACTS[key] === token);
+        const digest = await checksum(raw.trim());
+        const name = digest && Object.keys(ARTIFACTS).find((key) => ARTIFACTS[key] === digest);
 
         typeCommand('$ upload ' + file.name, () => {
             if (!name) {
-                termLine('unknown object', 'hot');
-                corruptPixels(3);
-            } else if (attached.has(name)) {
+                term.hint.textContent = 'failure';
+                termLine('failure', 'hot');
+                termLine('object rejected', 'dim');
+                setTimeout(exitEgg, 900);
+                return;
+            }
+
+            if (attached.has(name)) {
                 termLine(name + ' already attached', 'dim');
             } else {
                 attached.add(name);
-                termLine(file.name + ' :: ' + token, 'dim');
+                materials.set(name, raw.trim());
+                termLine(file.name + ' :: ' + digest.slice(0, 16) + ' ... ok', 'dim');
                 termLine('attached ' + attached.size + '/3');
                 corruptPixels(attached.size === 1 ? 9 : 18);
             }
 
             if (attached.size === 3) {
-                term.hint.remove();
-                runCrash();
+                termLine('');
+                termLine('objects sealed', 'dim');
+                term.hint.textContent = 'type help';
+                term.busy = false;
+                showPrompt();
                 return;
             }
 
-            term.hint.textContent = name ? 'drop a file' : 'try again';
+            term.hint.textContent = 'drop a file';
             term.busy = false;
             showPrompt();
         });
+    }
+
+    function submitCommand() {
+        const cmd = term.input.trim().toLowerCase();
+        if (!cmd) return;
+
+        term.prompt.remove();
+        term.prompt = null;
+        term.promptText = null;
+        term.input = '';
+
+        termLine('$ ' + cmd);
+
+        if (attached.size < 3) {
+            termLine('3 objects required', 'dim');
+            showPrompt();
+            return;
+        }
+
+        if (cmd === 'help') {
+            termLine('available commands:', 'dim');
+            termLine('  help      this list');
+            termLine('  decrypt   decrypt the objects');
+            showPrompt();
+            return;
+        }
+
+        if (cmd === 'decrypt') {
+            term.busy = true;
+            term.hint.remove();
+            termLine('decrypting ...', 'dim');
+            setTimeout(runCrash, 620);
+            return;
+        }
+
+        termLine('unknown command: ' + cmd, 'hot');
+        showPrompt();
     }
 
     function runCrash() {
@@ -1147,6 +1289,7 @@
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             termLine('');
             termLine('the universe is whole');
+            deliverKeyfile();
             return;
         }
 
@@ -1202,18 +1345,43 @@
                         clearInterval(scramble);
                         final.textContent = word;
                         final.classList.add('settled');
+                        setTimeout(deliverKeyfile, 500);
                     }
                 }, 55);
             }, 1160);
         }, 620);
     }
 
+    // typing at the shell
+    document.addEventListener('keydown', (e) => {
+        if (!term || term.busy || !term.prompt) return;
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitCommand();
+            return;
+        }
+
+        if (e.key === 'Backspace') {
+            e.preventDefault();
+            term.input = term.input.slice(0, -1);
+            drawInput();
+            return;
+        }
+
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey && term.input.length < 48) {
+            e.preventDefault();
+            term.input += e.key;
+            drawInput();
+        }
+    });
+
     // while the shell is open, files can be dropped anywhere
     document.addEventListener('dragover', (e) => {
         if (!term) return;
         e.preventDefault();
         if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-        term.stage.classList.add('armed');
+        if (!term.busy) term.stage.classList.add('armed');
     });
 
     document.addEventListener('dragleave', (e) => {
