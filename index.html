@@ -1,250 +1,1113 @@
 <!DOCTYPE html>
-<!-- Why you here? -->
+<!-- Why you here? You little mischivous creature. There are easter eggs here. Please leave. -->
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Martinsuii</title>
-    <style>
-        :root {
-            --bg-color: #0d1117;
-            --text-color: #c9d1d9;
-            --accent-color: #58a6ff;
-            --card-bg: #161b22;
-            --border-color: #30363d;
-            --tag-bg: #21262d;
-            --play-btn-bg: #238636;
-            --play-btn-hover: #2ea043;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>martinsuii</title>
+<meta name="description" content="martinsuii — small developer, small things.">
+<meta name="theme-color" content="#0b0c0e">
+<meta property="og:title" content="martinsuii">
+<meta property="og:description" content="small developer, small things.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://msuii.dev/">
+<meta property="og:image" content="https://msuii.dev/Assets/fvog.jpg">
+<link rel="icon" href="Assets/fvog.jpg">
+<style>
+    :root {
+        --bg: #0b0c0e;
+        --bg-soft: #12141a;
+        --text: #e8e6e1;
+        --muted: #8b8983;
+        --dim: #6a6863;
+        --accent: #8ab4f8;
+        --accent-soft: rgba(138, 180, 248, .12);
+        --line: rgba(232, 230, 225, .1);
+        --line-strong: rgba(232, 230, 225, .2);
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 4rem 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
+    * { box-sizing: border-box; }
 
-        .container {
-            max-width: 650px;
-            width: 90%;
-            padding: 2.5rem;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
+    html { scroll-behavior: smooth; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 15.5px;
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
 
-        h1 {
-            color: #ffffff;
-            margin: 0 0 0.5rem 0;
-            font-size: 2rem;
-        }
+    a { color: inherit; }
 
-        .subtitle {
-            font-size: 1.1rem;
-            line-height: 1.5;
-            color: #8b949e;
-            margin: 0;
-        }
+    ::selection { background: var(--accent); color: var(--bg); }
 
-        h2 {
-            color: #ffffff;
-            font-size: 1.4rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-        }
+    :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
 
-        .category-label {
-            color: #8b949e;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-top: 0.5rem;
-        }
+    /* ---------- slow moving background ---------- */
 
-        .projects-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
+    .aurora {
+        position: fixed;
+        inset: -20%;
+        z-index: 0;
+        pointer-events: none;
+        opacity: .5;
+        filter: blur(90px);
+    }
 
-        .project-card {
-            position: relative;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1.25rem;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
+    .aurora::before,
+    .aurora::after {
+        content: "";
+        position: absolute;
+        width: 45vmax;
+        height: 45vmax;
+        border-radius: 50%;
+    }
 
-        .project-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-color);
-        }
+    .aurora::before {
+        top: -10%;
+        left: -10%;
+        background: radial-gradient(circle, rgba(138, 180, 248, .16), transparent 70%);
+        animation: drift 34s ease-in-out infinite alternate;
+    }
 
-        .project-card-link {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-        }
+    .aurora::after {
+        right: -15%;
+        bottom: -15%;
+        background: radial-gradient(circle, rgba(186, 146, 240, .12), transparent 70%);
+        animation: drift 44s ease-in-out infinite alternate-reverse;
+    }
 
-        .project-title-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-            padding-right: 70px; /* Leave space so title text doesn't overlap button */
-        }
+    @keyframes drift {
+        from { transform: translate3d(0, 0, 0) scale(1); }
+        to { transform: translate3d(6%, 8%, 0) scale(1.15); }
+    }
 
-        .project-title {
-            color: var(--accent-color);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 0;
-        }
+    /* ---------- shell ---------- */
 
-        .play-btn {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            background-color: var(--play-btn-bg);
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 0.35rem 0.8rem;
-            border-radius: 4px;
-            transition: background-color 0.1s ease;
-            z-index: 2; /* Ensures click registers on the button, not the card link */
-        }
+    .wrap {
+        position: relative;
+        z-index: 1;
+        width: min(100% - 2.5rem, 860px);
+        margin: 0 auto;
+    }
 
-        .play-btn:hover {
-            background-color: var(--play-btn-hover);
-        }
+    /* ---------- header ---------- */
 
-        .project-desc {
-            color: #8b949e;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            margin: 0 0 1rem 0;
-        }
+    header {
+        padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(2rem, 4vw, 3rem);
+    }
 
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
+    .avatar {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        border: 1px solid var(--line-strong);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+        animation: bob 7s ease-in-out infinite;
+        transition: transform .3s ease;
+    }
 
-        .tag {
-            background-color: var(--tag-bg);
-            color: #c9d1d9;
-            font-size: 0.75rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }
+    .avatar:hover { transform: scale(1.06) rotate(-2deg); }
 
-        footer {
-            text-align: center;
-            margin-top: 2.5rem;
-            font-size: 0.8rem;
-            color: #484f58;
+    @keyframes bob {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+    h1 {
+        font-size: clamp(1.7rem, 4.2vw, 2.3rem);
+        line-height: 1.15;
+        letter-spacing: -.02em;
+        font-weight: 700;
+        margin: 1.4rem 0 .5rem;
+    }
+
+    .tagline {
+        color: var(--muted);
+        margin: 0;
+        max-width: 42ch;
+    }
+
+    .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem 1.1rem;
+        margin-top: 1.4rem;
+        font-size: .9rem;
+    }
+
+    .links a {
+        color: var(--text);
+        text-decoration: none;
+        padding-bottom: 1px;
+        background-image: linear-gradient(var(--accent), var(--accent));
+        background-size: 0 1px;
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        transition: background-size .3s ease, color .2s ease;
+    }
+
+    .links a:hover {
+        background-size: 100% 1px;
+        color: var(--accent);
+    }
+
+    /* ---------- sections ---------- */
+
+    section { padding: clamp(2rem, 5vw, 3.2rem) 0; }
+
+    .head {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        margin-bottom: 1.4rem;
+    }
+
+    .head h2 {
+        margin: 0;
+        font-size: .76rem;
+        font-weight: 600;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: var(--dim);
+    }
+
+    .head::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+    }
+
+    /* Why are you still here exactly? */
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: .9rem;
+    }
+
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        padding: 1.1rem 1.15rem 1.15rem;
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg-soft);
+        overflow: hidden;
+        transition: transform .25s ease, border-color .25s ease, background .25s ease;
+    }
+
+    .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(120% 90% at 0% 0%, var(--accent-soft), transparent 60%);
+        opacity: 0;
+        transition: opacity .3s ease;
+        pointer-events: none;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        border-color: var(--line-strong);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card > * { position: relative; }
+
+    .card > a.card__stretch {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border-radius: 10px;
+    }
+
+    .play {
+        align-self: flex-start;
+        margin-top: .35rem;
+        padding: .35rem .8rem;
+        border-radius: 999px;
+        border: 1px solid var(--line-strong);
+        background: var(--accent-soft);
+        color: var(--text);
+        font-size: .8rem;
+        font-weight: 600;
+        text-decoration: none;
+        position: relative;
+        z-index: 2;
+        transition: background .22s ease, border-color .22s ease, color .22s ease, transform .22s ease;
+    }
+
+    .play:hover,
+    .play:focus-visible {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--bg);
+        transform: translateY(-1px);
+    }
+
+    .play--egg {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .card__title {
+        font-weight: 600;
+        font-size: .98rem;
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+    }
+
+    .card__title span {
+        color: var(--dim);
+        font-size: .8rem;
+        transition: transform .25s ease, color .25s ease;
+    }
+
+    .card:hover .card__title span {
+        transform: translate(2px, -2px);
+        color: var(--accent);
+    }
+
+    .card__desc {
+        margin: 0;
+        color: var(--muted);
+        font-size: .88rem;
+        line-height: 1.55;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+        margin-top: .35rem;
+    }
+
+    .tag {
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: .68rem;
+        color: var(--dim);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: .1rem .5rem;
+    }
+
+    /* ---------- footer ---------- */
+
+    footer {
+        position: relative;
+        z-index: 1;
+        padding: 2.5rem 0 3rem;
+        border-top: 1px solid var(--line);
+        color: var(--dim);
+        font-size: .8rem;
+    }
+
+    .footline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .6rem 1.2rem;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .arch {
+        background: none;
+        border: 0;
+        padding: .1rem 0;
+        font: inherit;
+        color: var(--dim);
+        cursor: pointer;
+        transition: color .2s ease;
+    }
+
+    .arch:hover { color: var(--accent); }
+
+    /* ---------- reveal on scroll ---------- */
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity .6s ease, transform .6s cubic-bezier(.2, .7, .3, 1);
+    }
+
+    .reveal.in {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* ---------- little duck ---------- */
+
+    .duck {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 5;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: var(--bg-soft);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        opacity: .55;
+        transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .duck:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+
+    .duck svg { width: 20px; height: 20px; }
+
+    .duck.is-target {
+        opacity: 1;
+        animation: none;
+        transform: scale(1.3);
+        border-color: var(--accent);
+        cursor: copy;
+    }
+
+    .duck.is-armed {
+        opacity: 1;
+        border-color: var(--accent);
+    }
+
+    /* ---------- the secret ---------- */
+
+    .egg-stage {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .egg-stage::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(11, 12, 14, .64);
+        opacity: 0;
+        animation: egg-wash 3.6s ease forwards;
+    }
+
+    .egg-stage::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        opacity: 0;
+        animation: egg-flash .45s ease-out;
+    }
+
+    @keyframes egg-wash {
+        0% { opacity: 0; }
+        7% { opacity: 1; }
+        84% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    @keyframes egg-flash {
+        0% { opacity: .18; }
+        100% { opacity: 0; }
+    }
+
+    .egg-layer { position: absolute; inset: 0; }
+
+    .flyer {
+        position: absolute;
+        top: var(--y, 50%);
+        left: -150px;
+        width: var(--s, 30px);
+        height: var(--s, 30px);
+        animation: egg-cross var(--d, 2.4s) linear var(--delay, 0s) forwards;
+        will-change: transform;
+    }
+
+    .flyer svg {
+        width: 100%;
+        height: 100%;
+        transform: scaleX(var(--flip, 1));
+    }
+
+    .layer-far .flyer { filter: blur(2.5px); opacity: .4; }
+    .layer-mid .flyer { opacity: .78; }
+    .layer-near .flyer { filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .55)); }
+
+    @keyframes egg-cross {
+        from {
+            transform: translateX(0) translateY(0) rotate(var(--rot, 0deg));
         }
-    </style>
+        to {
+            transform: translateX(calc(100vw + 320px)) translateY(-7vh) rotate(var(--rot, 0deg));
+        }
+    }
+
+    .egg-hero {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: min(90vw, 780px);
+        transform: translate(-50%, -50%);
+        text-align: center;
+        animation: egg-hero 3.6s cubic-bezier(.16, .84, .24, 1) forwards;
+    }
+
+    .egg-hero strong {
+        display: block;
+        font-size: clamp(3.2rem, 15vw, 9rem);
+        font-weight: 900;
+        line-height: .9;
+        letter-spacing: -.05em;
+        color: var(--accent);
+        text-shadow: 0 12px 50px rgba(0, 0, 0, .7);
+    }
+
+    .egg-hero span {
+        display: block;
+        margin-top: .9rem;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: .78rem;
+        letter-spacing: .28em;
+        text-transform: uppercase;
+        color: var(--text);
+        opacity: .8;
+    }
+
+    @keyframes egg-hero {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(.75); letter-spacing: .3em; }
+        14% { opacity: 1; }
+        32% { letter-spacing: -.05em; }
+        40% { transform: translate(-50%, -50%) scale(1); }
+        76% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        100% { opacity: 0; transform: translate(-50%, -50%) scale(1.14); }
+    }
+
+    body.egg-mode .wrap,
+    body.egg-mode footer {
+        filter: blur(3px) saturate(.55);
+        transition: filter .45s ease;
+    }
+
+    body.egg-shake .wrap,
+    body.egg-shake footer {
+        animation: egg-shake .55s ease-in-out;
+    }
+
+    @keyframes egg-shake {
+        0%, 100% { transform: translate(0, 0); }
+        20% { transform: translate(-4px, 2px); }
+        40% { transform: translate(5px, -3px); }
+        60% { transform: translate(-3px, -2px); }
+        80% { transform: translate(3px, 3px); }
+    }
+
+    /* ---------- the other secret ---------- */
+
+    .crash {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        padding: clamp(1rem, 4vw, 2.75rem);
+        background: rgba(3, 5, 6, .93);
+        color: #7dffb0;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: clamp(.72rem, 1.7vw, .95rem);
+        line-height: 1.55;
+        overflow: hidden;
+        backdrop-filter: blur(2px) contrast(1.15);
+        animation: crash-in .16s steps(3) both;
+    }
+
+    .crash::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, .07) 0 1px,
+            transparent 1px 3px
+        );
+        animation: crash-flicker .1s steps(2) infinite;
+    }
+
+    .crash.out {
+        animation: none;
+        opacity: 0;
+        transition: opacity .4s ease;
+    }
+
+    .crash.burst { animation: crash-burst .16s steps(2) 3; }
+
+    .crash__log {
+        margin: 0;
+        white-space: pre-wrap;
+        text-shadow: 0 0 7px rgba(125, 255, 176, .45);
+        max-height: 100%;
+        overflow: hidden;
+    }
+
+    .crash__log > div {
+        animation: line-in .13s steps(2) both;
+    }
+
+    .crash__log .dim { color: #2f6b48; text-shadow: none; }
+    .crash__log .hot { color: #ff4d6d; text-shadow: 0 0 9px rgba(255, 77, 109, .6); }
+    .crash__log .blank { height: .7em; }
+
+    @keyframes line-in {
+        from { opacity: .15; transform: translateX(-3px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    .crash__cursor {
+        display: inline-block;
+        margin-left: .15em;
+        animation: blink 1s steps(2) infinite;
+    }
+
+    .crash__final {
+        margin-top: 1.2em;
+        font-size: clamp(1.35rem, 6.2vw, 3.1rem);
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: .02em;
+        color: #e8fff2;
+        text-shadow: 0 0 22px rgba(125, 255, 176, .55);
+        animation: crash-final .5s cubic-bezier(.16, .9, .2, 1) both;
+    }
+
+    .crash__final em {
+        display: block;
+        margin-top: .8em;
+        font-style: normal;
+        font-size: .3em;
+        font-weight: 500;
+        letter-spacing: .34em;
+        text-transform: uppercase;
+        color: #7dffb0;
+        opacity: .8;
+        text-shadow: 0 0 12px rgba(125, 255, 176, .5);
+    }
+
+    .crash__hint {
+        margin-top: 2.2em;
+        font-size: .72em;
+        letter-spacing: .18em;
+        color: #2f6b48;
+        animation: line-in .4s steps(3) .35s both;
+    }
+
+    body.crash-mode .wrap,
+    body.crash-mode footer {
+        animation: page-glitch .22s steps(2) infinite;
+        filter: blur(1.4px) saturate(1.4) hue-rotate(-12deg);
+    }
+
+    @keyframes crash-in {
+        from { opacity: 0; transform: translateY(6px) scale(1.02); }
+        to { opacity: 1; transform: none; }
+    }
+
+    @keyframes crash-flicker {
+        0%, 100% { opacity: .5; }
+        50% { opacity: 1; }
+    }
+
+    @keyframes crash-burst {
+        0% { transform: translate(0, 0); filter: none; }
+        50% { transform: translate(-6px, 3px); filter: invert(1) hue-rotate(90deg); }
+        100% { transform: translate(5px, -3px); filter: none; }
+    }
+
+    @keyframes crash-final {
+        from { opacity: 0; transform: scale(.94); letter-spacing: .18em; }
+        to { opacity: 1; transform: scale(1); letter-spacing: .02em; }
+    }
+
+    @keyframes page-glitch {
+        0% { transform: translate(0, 0); clip-path: none; }
+        50% { transform: translate(-1px, 1px) skewX(.3deg); clip-path: inset(2% 0 1% 0); }
+        100% { transform: translate(1px, -1px); clip-path: none; }
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        z-index: 30;
+        padding: .5rem .95rem;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--bg-soft);
+        color: var(--text);
+        font-size: .8rem;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, 10px);
+        transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .toast.on {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    .duck.spin { animation: spin .55s cubic-bezier(.3, .1, .3, 1); }
+
+    @keyframes spin {
+        from { transform: rotate(0); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* ---------- small screens ---------- */
+
+    @media (max-width: 560px) {
+        .avatar { width: 68px; height: 68px; }
+        .duck { width: 34px; height: 34px; right: 12px; bottom: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after {
+            animation-duration: .001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: .001ms !important;
+        }
+        .reveal { opacity: 1; transform: none; }
+    }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1>Martinsuii</h1>
-            <p class="subtitle">Just a small developer that makes small things</p>
+<div class="aurora" aria-hidden="true"></div>
+
+<div class="wrap">
+
+    <header>
+        <img class="avatar" id="avatar" src="Assets/fvog.jpg" alt="martinsuii" width="138" height="138" decoding="async" draggable="true" data-egg="profile">
+        <h1>martinsuii</h1>
+        <p class="tagline">Small developer. Makes small things, then runs them himself.</p>
+        <div class="links">
+            <a id="gh" href="https://github.com/martinsuii" target="_blank" rel="noopener" draggable="true" data-egg="profile">GitHub</a>
+            <a href="#projects">Projects</a>
         </div>
+    </header>
 
-        <section class="projects-section">
-            <h2>Featured Projects</h2>
-            
-            <div class="projects-grid">
-                <div class="category-label">Games</div>
-                <div class="project-card">
-                    <a href="https://github.com/martinsuii/another-dungeon-game" target="_blank" class="project-card-link">
-                        <div class="project-title-container">
-                            <div class="project-title">Another dungeon game</div>
-                        </div>
-                        <div class="project-desc">Just another dungeon game</div>
-                        <div class="tags">
-                            <span class="tag">HTML</span>
-                            <span class="tag">CSS</span>
-                            <span class="tag">JavaScript</span>
-                        </div>
-                    </a>
-                    <a href="https://martinsuii.github.io/another-dungeon-game" target="_blank" class="play-btn" id="play-btn">Play</a>
+    <section id="projects" class="reveal">
+        <div class="head"><h2>Projects</h2></div>
+        <div class="cards">
+            <div class="card" id="dungeon-card" draggable="true" data-egg="repo">
+                <div class="card__title">Another dungeon game <span>↗</span></div>
+                <p class="card__desc">Just another dungeon game, in a browser.</p>
+                <div class="tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag">JS</span>
                 </div>
-
-                <div class="category-label">Tools</div>
-                <a href="https://github.com/martinsuii/qr-auth" target="_blank" class="project-card">
-                    <div class="project-title-container">
-                        <div class="project-title">QR authenticator</div>
-                    </div>
-                    <div class="project-desc">100% air-gapped P2P QR authenticator using Ed25519 challenge-response. Phone signs via QR code, laptop webcam verifies. No network, no Bluetooth</div>
-                    <div class="tags">
-                        <span class="tag">Kotlin</span>
-                        <span class="tag">Go</span>
-                    </div>
-                </a>
-
-                <a href="https://github.com/martinsuii/impress-mcp" target="_blank" class="project-card">
-                    <div class="project-title-container">
-                        <div class="project-title">Impress MCP</div>
-                    </div>
-                    <div class="project-desc">An MCP server that drives a live LibreOffice Impress window over UNO, so an AI agent can build and edit slide decks</div>
-                    <div class="tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">LibreOffice</span>
-                        <span class="tag">MCP</span>
-                    </div>
-                </a>
-
-                <a href="https://github.com/martinsuii/wa-bot" target="_blank" class="project-card">
-                    <div class="project-title-container">
-                        <div class="project-title">WhatsApp Bot</div>
-                    </div>
-                    <div class="project-desc">A WhatsApp moderation bot built with Baileys. Detects and deletes profanity in groups, warns users via DM, and provides admin tools for group management</div>
-                    <div class="tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">Node.js</span>
-                    </div>
-                </a>
+                <a class="play" href="https://martinsuii.github.io/another-dungeon-game" target="_blank" rel="noopener">Play ↗</a>
+                <a class="card__stretch" href="https://github.com/martinsuii/another-dungeon-game" target="_blank" rel="noopener" aria-label="Another dungeon game repository"></a>
             </div>
-        </section>
+            <a class="card" href="https://github.com/martinsuii/qr-auth" target="_blank" rel="noopener">
+                <div class="card__title">QR authenticator <span>↗</span></div>
+                <p class="card__desc">Air-gapped P2P QR authenticator using Ed25519 challenge-response. No network, no Bluetooth.</p>
+                <div class="tags">
+                    <span class="tag">Kotlin</span>
+                    <span class="tag">Go</span>
+                </div>
+            </a>
+            <a class="card" href="https://github.com/martinsuii/impress-mcp" target="_blank" rel="noopener">
+                <div class="card__title">Impress MCP <span>↗</span></div>
+                <p class="card__desc">An MCP server that drives a live LibreOffice Impress window over UNO, so an agent can build and edit slide decks.</p>
+                <div class="tags">
+                    <span class="tag">Python</span>
+                    <span class="tag">LibreOffice</span>
+                    <span class="tag">MCP</span>
+                </div>
+            </a>
+            <a class="card" href="https://github.com/martinsuii/wa-bot" target="_blank" rel="noopener">
+                <div class="card__title">WhatsApp Bot <span>↗</span></div>
+                <p class="card__desc">Baileys-based moderation bot. Deletes profanity, warns over DM, gives admins tools.</p>
+                <div class="tags">
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Node.js</span>
+                </div>
+            </a>
+        </div>
+    </section>
 
-        <footer>
-             <span id="very-important-notice-text" style="cursor:pointer;">I use arch btw</span>
-        </footer>
+</div>
+
+<footer>
+    <div class="wrap footline">
+        <span>© <span id="year">2026</span> martinsuii</span>
+        <button class="arch" id="arch" type="button">i use arch btw</button>
+        <span><span id="clock">--:--:--</span></span>
     </div>
+</footer>
+
+<button class="duck" id="duck" type="button" aria-label="Quack">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+        <ellipse cx="16" cy="20" rx="10" ry="7" fill="#8ab4f8"/>
+        <circle cx="21" cy="11" r="5.5" fill="#8ab4f8"/>
+        <path d="M26 10.5h4l-4 3z" fill="#e8e6e1"/>
+        <circle cx="22.5" cy="9.5" r="1.1" fill="#0b0c0e"/>
+    </svg>
+</button>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-    document.getElementById('very-important-notice-text').addEventListener('click', function() {
-        document.getElementById('play-btn').href = 'https://martinsuii.github.io/another-dungeon-game?easter=egg';
+    // scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+            for (const e of entries) {
+                if (e.isIntersecting) {
+                    e.target.classList.add('in');
+                    io.unobserve(e.target);
+                }
+            }
+        }, { threshold: .15, rootMargin: '0px 0px -40px 0px' });
+        revealEls.forEach((el) => io.observe(el));
+    } else {
+        revealEls.forEach((el) => el.classList.add('in'));
+    }
+
+    // clock + year
+    const clock = document.getElementById('clock');
+    const year = document.getElementById('year');
+    function tick() {
+        const d = new Date();
+        clock.textContent = d.toLocaleTimeString([], { hour12: false });
+        year.textContent = d.getFullYear();
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // duck
+    const duck = document.getElementById('duck');
+    duck.addEventListener('click', () => {
+        duck.classList.remove('spin');
+        void duck.offsetWidth;
+        duck.classList.add('spin');
     });
+
+    // the important button arms the dungeon game easter egg
+    const arch = document.getElementById('arch');
+    const play = document.querySelector('.play');
+    const plainGame = 'https://martinsuii.github.io/another-dungeon-game';
+    let eggArmed = false;
+
+    arch.addEventListener('click', () => {
+        eggArmed = !eggArmed;
+        play.href = eggArmed ? plainGame + '?easter=egg' : plainGame;
+        play.classList.toggle('play--egg', eggArmed);
+    });
+
+    // drag the repo card or the profile link onto the duck — both, and something happens
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    function say(text) {
+        toast.textContent = text;
+        toast.classList.add('on');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('on'), 2600);
+    }
+
+    function duckSecret() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            say('you dragged the internet onto a duck');
+            return;
+        }
+
+        const shape = duck.querySelector('svg').outerHTML;
+        const stage = document.createElement('div');
+        stage.className = 'egg-stage';
+        stage.setAttribute('aria-hidden', 'true');
+
+        const layers = [
+            { cls: 'layer-far', count: 20, min: 12, max: 22, slow: 2.9, fast: 4.4 },
+            { cls: 'layer-mid', count: 14, min: 24, max: 38, slow: 2.0, fast: 3.1 },
+            { cls: 'layer-near', count: 7, min: 46, max: 76, slow: 1.4, fast: 2.2 }
+        ];
+
+        for (const layer of layers) {
+            const el = document.createElement('div');
+            el.className = 'egg-layer ' + layer.cls;
+
+            for (let i = 0; i < layer.count; i++) {
+                const flyer = document.createElement('div');
+                flyer.className = 'flyer';
+                flyer.style.setProperty('--s', (layer.min + Math.random() * (layer.max - layer.min)).toFixed(0) + 'px');
+                flyer.style.setProperty('--y', (Math.random() * 100).toFixed(1) + 'vh');
+                flyer.style.setProperty('--d', (layer.slow + Math.random() * (layer.fast - layer.slow)).toFixed(2) + 's');
+                flyer.style.setProperty('--delay', (Math.random() * 1.1).toFixed(2) + 's');
+                flyer.style.setProperty('--rot', (Math.random() * 14 - 7).toFixed(1) + 'deg');
+                flyer.style.setProperty('--flip', Math.random() > .5 ? '-1' : '1');
+                flyer.innerHTML = shape;
+                el.appendChild(flyer);
+            }
+            stage.appendChild(el);
+        }
+
+        const hero = document.createElement('div');
+        hero.className = 'egg-hero';
+        hero.innerHTML = '<strong>QUACK</strong><span>you found the duck</span>';
+        stage.appendChild(hero);
+
+        document.body.appendChild(stage);
+        document.body.classList.add('egg-mode', 'egg-shake');
+        duck.classList.remove('spin');
+        void duck.offsetWidth;
+        duck.classList.add('spin');
+
+        setTimeout(() => {
+            stage.remove();
+            document.body.classList.remove('egg-mode', 'egg-shake');
+        }, 3700);
+    }
+
+    const sources = [
+        document.getElementById('dungeon-card'),
+        document.getElementById('avatar'),
+        document.getElementById('gh')
+    ];
+
+    let eggStep = 0;
+
+    sources.forEach((el) => {
+        el.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', el.dataset.egg);
+            e.dataTransfer.effectAllowed = 'link';
+        });
+    });
+
+    duck.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'link';
+        duck.classList.add('is-target');
+    });
+
+    duck.addEventListener('dragleave', () => duck.classList.remove('is-target'));
+
+    duck.addEventListener('drop', (e) => {
+        e.preventDefault();
+        duck.classList.remove('is-target');
+
+        if (e.dataTransfer.files && e.dataTransfer.files.length) {
+            takeArtifact(e.dataTransfer.files[0]);
+            return;
+        }
+
+        const token = e.dataTransfer.getData('text/plain');
+
+        if (eggStep === 0 && token === 'repo') {
+            eggStep = 1;
+            duck.classList.add('is-armed');
+            say('...');
+            return;
+        }
+
+        if (eggStep === 1 && token === 'profile') {
+            eggStep = 0;
+            duck.classList.remove('is-armed');
+            duckSecret();
+            return;
+        }
+
+        eggStep = 0;
+        duck.classList.remove('is-armed');
+        say('...?');
+    });
+
+    // ---- the git universe ----
+    const ARTIFACTS = {
+        genesis: '9cb04d72343094d1',
+        worm: '60eb7f3a33f290dc',
+        end: '015259d32e7a972f'
+    };
+    const carried = new Map();
+
+    function fileText(file) {
+        if (typeof file.text === 'function') return file.text();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+        });
+    }
+
+    async function takeArtifact(file) {
+        let raw = '';
+        try {
+            raw = await fileText(file);
+        } catch (err) {
+            raw = '';
+        }
+
+        const token = raw.toLowerCase().replace(/[^0-9a-f]/g, '');
+        const name = Object.keys(ARTIFACTS).find((key) => ARTIFACTS[key] === token);
+
+        if (!name) {
+            say('not one of them');
+            return;
+        }
+
+        if (carried.has(name)) {
+            say(name + ' is already here');
+            return;
+        }
+
+        carried.set(name, file.name);
+        duck.classList.add('is-armed');
+
+        if (carried.size < 3) {
+            say(name + ' · ' + carried.size + '/3');
+            return;
+        }
+
+        const order = [...carried.keys()];
+        carried.clear();
+        duck.classList.remove('is-armed');
+        runCrash(order);
+    }
+
+    function runCrash(order) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            say('the universe is whole');
+            return;
+        }
+
+        const stage = document.createElement('div');
+        stage.className = 'crash';
+        stage.setAttribute('aria-hidden', 'true');
+
+        const log = document.createElement('div');
+        log.className = 'crash__log';
+        stage.appendChild(log);
+        document.body.appendChild(stage);
+        document.body.classList.add('crash-mode');
+
+        duck.classList.remove('spin');
+        void duck.offsetWidth;
+        duck.classList.add('spin');
+
+        const timers = [];
+        let burstId = 0;
+        let closed = false;
+
+        const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+        const line = (text, cls) => {
+            const el = document.createElement('div');
+            if (cls) el.className = cls;
+            el.textContent = text || '\u00a0';
+            log.appendChild(el);
+            while (log.children.length > 18) log.firstElementChild.remove();
+        };
+
+        function close() {
+            if (closed) return;
+            closed = true;
+            timers.forEach((id) => {
+                clearTimeout(id);
+                clearInterval(id);
+            });
+            clearInterval(burstId);
+            stage.classList.add('out');
+            document.body.classList.remove('crash-mode');
+            document.removeEventListener('keydown', onKey);
+            setTimeout(() => stage.remove(), 420);
+        }
+
+        const onKey = (e) => {
+            if (e.key === 'Escape') close();
+        };
+        document.addEventListener('keydown', onKey);
+        stage.addEventListener('click', close);
+
+        line('$ git fsck --lost-found', 'dim');
+
+        order.forEach((name, i) => {
+            later(() => line('attaching ' + name + '.dat', 'dim'), 170 + i * 300);
+            later(() => line('           ' + ARTIFACTS[name] + '  ok'), 320 + i * 300);
+        });
+
+        later(() => line(''), 1150);
+        later(() => line('3 objects, 0 dangling'), 1200);
+        later(() => line('walking the tree ...'), 1420);
+
+        const glyphs = '0123456789abcdef#@%&$<>[]{}/*\\|~^`';
+        const noise = (len) => {
+            let out = '';
+            for (let i = 0; i < len; i++) out += glyphs[Math.floor(Math.random() * glyphs.length)];
+            return out;
+        };
+
+        later(() => {
+            stage.classList.add('burst');
+            let n = 0;
+            burstId = setInterval(() => {
+                n++;
+                if (n % 4 === 0) {
+                    line('!! read error at 0x' + noise(8) + '  retrying', 'hot');
+                } else if (n % 7 === 0) {
+                    line('   ' + noise(52), 'dim');
+                } else {
+                    line('   ' + noise(20 + Math.floor(Math.random() * 32)));
+                }
+            }, 55);
+        }, 1720);
+
+        later(() => {
+            stage.classList.remove('burst');
+            stage.style.animation = 'none';
+            clearInterval(burstId);
+            document.body.classList.remove('crash-mode');
+
+            log.innerHTML = '';
+            const final = document.createElement('div');
+            final.className = 'crash__final';
+            final.innerHTML = 'THE UNIVERSE IS A REPO<em>genesis · worm · end</em>';
+            log.appendChild(final);
+
+            const hint = document.createElement('div');
+            hint.className = 'crash__hint';
+            hint.textContent = '3 objects · 1 history · no backup';
+            log.appendChild(hint);
+        }, 2880);
+
+        later(close, 6800);
+    }
+
 </script>
 </body>
 </html>
